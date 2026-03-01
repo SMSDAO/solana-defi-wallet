@@ -232,10 +232,24 @@ See [CHANGELOG.md](./CHANGELOG.md) for full release notes.
 
 ## 📚 Documentation
 
-- **[Production Deployment Guide](./PRODUCTION_DEPLOYMENT.md)** - Complete deployment instructions for Vercel and other platforms
-- **[Design System](./DESIGN_SYSTEM.md)** - Component architecture, usage, and wire-up documentation
-- **[Optimization Summary](./OPTIMIZATION_SUMMARY.md)** - All production optimizations applied
+**[📖 Complete Documentation Hub](./docs/README.md)** - Comprehensive documentation for all aspects of the project
+
+### Quick Links
+- **[Quick Start Guide](./docs/guides/QUICK_START.md)** - Get started in minutes
+- **[API Documentation](./docs/api/README.md)** - Complete API reference
+- **[Production Deployment](./docs/deployment/PRODUCTION_DEPLOYMENT.md)** - Deploy to production
+- **[Architecture Overview](./docs/architecture/OVERVIEW.md)** - System architecture
+- **[Contributing Guidelines](./docs/guides/CONTRIBUTING.md)** - How to contribute
+- **[Troubleshooting Guide](./docs/guides/TROUBLESHOOTING.md)** - Common issues and solutions
+
+### Platform-Specific
+- **[Mobile App](./docs/mobile/README.md)** - React Native mobile app documentation
+- **[Desktop App](./docs/desktop/README.md)** - Electron desktop app documentation
+
+### Reference
 - **[CHANGELOG](./CHANGELOG.md)** - Version history and detailed release notes
+- **[Design System](./docs/guides/DESIGN_SYSTEM.md)** - Component architecture and theming
+- **[Optimization Summary](./docs/guides/OPTIMIZATION_SUMMARY.md)** - Production optimizations
 
 ## Contributing
 
