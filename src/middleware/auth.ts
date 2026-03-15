@@ -17,7 +17,7 @@ export const verifyAuth = (request: NextRequest): AuthUser | null => {
       return null;
     }
 
-    const secret = process.env.JWT_SECRET || 'your-secret-key';
+    const secret = process.env.JWT_SECRET || 'dev-only-secret-do-not-use-in-production';
     const decoded = jwt.verify(token, secret) as AuthUser;
     
     return decoded;
@@ -39,7 +39,7 @@ export const requireAuth = (request: NextRequest): AuthUser => {
 export const requireRole = (request: NextRequest, roles: UserRole[]): AuthUser => {
   const user = requireAuth(request);
 
-  if (user.role && !roles.includes(user.role)) {
+  if (!user.role || !roles.includes(user.role)) {
     throw new Error('Forbidden: insufficient permissions');
   }
 

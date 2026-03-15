@@ -8,7 +8,18 @@ const loginSchema = z.object({
   password: z.string().min(8),
 });
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('JWT_SECRET environment variable is required in production');
+    }
+    // Dev/CI fallback — never use in production
+    return 'dev-only-secret-do-not-use-in-production';
+  }
+  return secret;
+}
+
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
 
 export async function POST(request: NextRequest) {
@@ -25,30 +36,32 @@ export async function POST(request: NextRequest) {
 
     const { email, password } = result.data;
 
-    // In production, fetch admin from DB and verify bcrypt hash.
-    // For CI/demo, we verify against env-configured admin credentials.
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
-    const adminHashedPassword = process.env.ADMIN_PASSWORD_HASH || '';
+    const adminHashedPassword = process.env.ADMIN_PASSWORD_HASH;
 
     if (email !== adminEmail) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    // If no hash is configured, use a demo mode (dev only)
-    if (adminHashedPassword && process.env.NODE_ENV === 'production') {
+    // Always verify password when hash is configured
+    if (adminHashedPassword) {
       const valid = await bcrypt.compare(password, adminHashedPassword);
       if (!valid) {
         return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
       }
+    } else if (process.env.NODE_ENV === 'production') {
+      // In production, ADMIN_PASSWORD_HASH must be set
+      return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
     }
 
+    const secret = getJwtSecret();
     const payload = {
       userId: 'admin-1',
       walletAddress: adminEmail,
       role: 'Admin',
     };
 
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions);
+    const token = jwt.sign(payload, secret, { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions);
 
     return NextResponse.json({
       token,
