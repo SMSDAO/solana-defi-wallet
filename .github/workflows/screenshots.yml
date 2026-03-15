@@ -1,0 +1,66 @@
+name: Screenshots
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "src/app/**/*.tsx"
+      - "src/components/**/*.tsx"
+
+env:
+  DATABASE_URL: "file:./dev.db"
+  NODE_ENV: test
+  JWT_SECRET: "ci-test-secret-key-32chars-minimum"
+  NEXT_PUBLIC_RPC_URL: "https://api.mainnet-beta.solana.com"
+  NEXT_PUBLIC_API_URL: "http://localhost:3000/api"
+  NEXT_PUBLIC_ENV: "ci"
+  NEXT_PUBLIC_APP_URL: "http://localhost:3000"
+
+jobs:
+  screenshots:
+    name: Capture UI Screenshots
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Prisma generate
+        run: npx prisma generate
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Start app
+        run: npm start &
+        env:
+          PORT: 3000
+
+      - name: Wait for app
+        run: npx wait-on http://localhost:3000 --timeout 60000
+
+      - name: Capture User Dashboard
+        run: npx playwright screenshot --browser chromium "http://localhost:3000/dashboard" docs/assets/ui/user-dashboard.png --full-page
+
+      - name: Capture Admin Dashboard
+        run: npx playwright screenshot --browser chromium "http://localhost:3000/admin" docs/assets/ui/admin-dashboard.png --full-page
+
+      - name: Capture Developer Dashboard
+        run: npx playwright screenshot --browser chromium "http://localhost:3000/developer" docs/assets/ui/dev-dashboard.png --full-page
+
+      - name: Commit screenshots
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update UI screenshots"
+          file_pattern: docs/assets/ui/*.png

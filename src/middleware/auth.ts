@@ -1,9 +1,12 @@
 import { NextRequest } from 'next/server';
 import jwt from 'jsonwebtoken';
 
+export type UserRole = 'Admin' | 'Developer' | 'User' | 'Auditor';
+
 export interface AuthUser {
   userId: string;
   walletAddress: string;
+  role?: UserRole;
 }
 
 export const verifyAuth = (request: NextRequest): AuthUser | null => {
@@ -18,7 +21,7 @@ export const verifyAuth = (request: NextRequest): AuthUser | null => {
     const decoded = jwt.verify(token, secret) as AuthUser;
     
     return decoded;
-  } catch (error) {
+  } catch {
     return null;
   }
 };
@@ -32,4 +35,15 @@ export const requireAuth = (request: NextRequest): AuthUser => {
   
   return user;
 };
+
+export const requireRole = (request: NextRequest, roles: UserRole[]): AuthUser => {
+  const user = requireAuth(request);
+
+  if (user.role && !roles.includes(user.role)) {
+    throw new Error('Forbidden: insufficient permissions');
+  }
+
+  return user;
+};
+
 

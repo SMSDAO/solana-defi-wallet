@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (e.g. v1.0.0)"
+        required: true
+        default: "v1.0.0"
+      release_name:
+        description: "Release name"
+        required: true
+        default: "Production Ready Enterprise Release"
+
+jobs:
+  release:
+    name: Create Release Tag
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Create and push tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ github.event.inputs.version }}" -m "${{ github.event.inputs.release_name }}"
+          git push origin "${{ github.event.inputs.version }}"
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          release_name: "${{ github.event.inputs.version }} - ${{ github.event.inputs.release_name }}"
+          body: |
+            ## ${{ github.event.inputs.version }} - ${{ github.event.inputs.release_name }}
+
+            See [CHANGELOG.md](CHANGELOG.md) for full details.
+
+            ### Highlights
+            - Enterprise-grade CI/CD with Node 20
+            - Neo-Glow UI with User, Admin, and Developer dashboards
+            - Secure RBAC authentication with bcrypt and refresh tokens
+            - API hardening: rate limiting, Zod validation, secure headers
+            - SQLite/PostgreSQL dual database support
+            - Comprehensive documentation and deployment guides
+          draft: false
+          prerelease: false

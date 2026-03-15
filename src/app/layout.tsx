@@ -4,6 +4,7 @@ import './globals.css';
 import { WalletProvider } from '@/components/wallet/WalletProvider';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { AuraBackground } from '@/components/ui/AuraBackground';
+import { TabNav } from '@/components/ui/TabNav';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Toaster } from 'react-hot-toast';
 
@@ -112,6 +113,7 @@ export default function RootLayout({
           <WalletProvider>
             <ThemeProvider>
               <AuraBackground />
+              <TabNav />
               {children}
               <Toaster
                 position="top-right"
