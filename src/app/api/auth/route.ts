@@ -49,9 +49,9 @@ export async function POST(request: NextRequest) {
       if (!valid) {
         return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
       }
-    } else if (process.env.NODE_ENV === 'production') {
-      // In production, ADMIN_PASSWORD_HASH must be set
-      return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
+    } else if (process.env.NODE_ENV !== 'test') {
+      // ADMIN_PASSWORD_HASH must be set in all non-test environments
+      return NextResponse.json({ error: 'Server misconfigured' }, { status: 503 });
     }
 
     const secret = getJwtSecret();

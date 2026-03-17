@@ -12,6 +12,7 @@ import {
   FileText,
   Settings,
   CheckCircle,
+  XCircle,
 } from 'lucide-react';
 
 const systemStats = [
@@ -93,7 +94,9 @@ export default function AdminPage() {
                       </td>
                       <td className="py-2 pr-4">
                         <span className={`flex items-center gap-1 text-xs ${u.status === 'Active' ? 'text-green-400' : 'text-red-400'}`}>
-                          <CheckCircle className="w-3 h-3" />
+                          {u.status === 'Active'
+                            ? <CheckCircle className="w-3 h-3" />
+                            : <XCircle className="w-3 h-3" />}
                           {u.status}
                         </span>
                       </td>

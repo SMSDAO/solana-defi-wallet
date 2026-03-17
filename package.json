@@ -74,7 +74,9 @@
     "jest-environment-node": "^29.7.0",
     "ts-jest": "^29.1.2",
     "eslint": "^8.56.0",
-    "eslint-config-next": "^14.0.4"
+    "eslint-config-next": "^14.0.4",
+    "wait-on": "^7.2.0",
+    "@playwright/test": "^1.50.0"
   },
   "optionalDependencies": {},
   "bundleDependencies": false

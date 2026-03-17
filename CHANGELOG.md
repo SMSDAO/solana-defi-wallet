@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0] - 2026-03-15 — Enterprise Stabilization
+## [1.1.0] - 2026-03-15 — Enterprise Stabilization
 
 ### Added
 - **CI/CD**: GitHub Actions workflow (Node 20) with lint, typecheck, build, test, and security scan jobs

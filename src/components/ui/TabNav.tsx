@@ -30,19 +30,17 @@ export function TabNav() {
   return (
     <nav
       className="w-full border-b border-[var(--color-border)] bg-[var(--color-surface)]/80 backdrop-blur-sm sticky top-0 z-50"
-      role="navigation"
       aria-label="Main navigation"
     >
       <div className="max-w-7xl mx-auto px-4">
-        <ul className="flex items-center gap-1 overflow-x-auto scrollbar-none" role="tablist">
+        <ul className="flex items-center gap-1 overflow-x-auto scrollbar-none">
           {tabs.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
             return (
-              <li key={href} role="none">
+              <li key={href}>
                 <Link
                   href={href}
-                  role="tab"
-                  aria-selected={isActive}
+                  aria-current={isActive ? 'page' : undefined}
                   className={cn(
                     'flex items-center gap-2 px-3 py-3 text-sm font-medium whitespace-nowrap transition-all duration-200 border-b-2 -mb-px focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]',
                     isActive
