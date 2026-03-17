@@ -4,13 +4,14 @@ import jwt from 'jsonwebtoken';
 import { NextRequest } from 'next/server';
 import { UserRole, requireAuth, requireRole, ForbiddenError, UnauthorizedError } from '@/middleware/auth';
 
-// Must match the dev-fallback secret used by getVerifySecret() in non-production
-const DEV_SECRET = 'dev-only-secret-do-not-use-in-production';
+// Use the same secret that getVerifySecret() will use so tokens verify correctly
+// in any environment (local dev, CI with JWT_SECRET set, production fallback).
+const SIGN_SECRET = process.env.JWT_SECRET || 'dev-only-secret-do-not-use-in-production';
 
 function makeRequest(payload?: object): NextRequest {
   const headers: Record<string, string> = {};
   if (payload) {
-    const token = jwt.sign(payload, DEV_SECRET);
+    const token = jwt.sign(payload, SIGN_SECRET);
     headers['authorization'] = `Bearer ${token}`;
   }
   return new NextRequest('http://localhost/', { headers });

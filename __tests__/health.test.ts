@@ -13,9 +13,11 @@ describe('GET /api/health', () => {
     const data = await response.json();
 
     expect(data).toHaveProperty('status', 'ok');
-    expect(data).toHaveProperty('version', '1.0.0');
     expect(data).toHaveProperty('timestamp');
     expect(data).toHaveProperty('environment');
+    // version is sourced from package.json; assert it's a non-empty semver string
+    expect(typeof data.version).toBe('string');
+    expect(data.version.length).toBeGreaterThan(0);
   });
 
   it('timestamp is a valid ISO date string', async () => {

@@ -1,15 +1,28 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireRole, ForbiddenError, UnauthorizedError } from '@/middleware/auth';
 
 const startTime = Date.now();
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  try {
+    requireRole(request, ['Admin', 'Developer']);
+  } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (error instanceof ForbiddenError) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+    throw error;
+  }
+
   const uptimeMs = Date.now() - startTime;
+  const { rss, heapUsed, heapTotal, external } = process.memoryUsage();
 
   return NextResponse.json({
-    uptime_ms: uptimeMs,
-    uptime_human: formatUptime(uptimeMs),
-    memory: process.memoryUsage(),
-    node_version: process.version,
+    uptimeMs,
+    uptimeHuman: formatUptime(uptimeMs),
+    memory: { rss, heapUsed, heapTotal, external },
     timestamp: new Date().toISOString(),
   });
 }
