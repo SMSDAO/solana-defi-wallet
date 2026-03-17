@@ -8,7 +8,6 @@ on:
 
 env:
   DATABASE_URL: "file:./dev.db"
-  NODE_ENV: test
   JWT_SECRET: "ci-test-secret-key-32chars-minimum"
   NEXT_PUBLIC_RPC_URL: "https://api.mainnet-beta.solana.com"
   NEXT_PUBLIC_API_URL: "http://localhost:3000/api"
@@ -94,6 +93,8 @@ jobs:
         run: npx prisma generate
 
       - name: Run tests
+        env:
+          NODE_ENV: test
         run: npm test -- --passWithNoTests
 
   security:

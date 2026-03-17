@@ -49,9 +49,12 @@ export async function POST(request: NextRequest) {
       if (!valid) {
         return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
       }
-    } else if (process.env.NODE_ENV !== 'test') {
-      // ADMIN_PASSWORD_HASH must be set in all non-test environments
-      return NextResponse.json({ error: 'Server misconfigured' }, { status: 503 });
+    } else if (process.env.NODE_ENV === 'production') {
+      // Generate with: node -e "const bcrypt=require('bcryptjs'); bcrypt.hash('yourpassword',12).then(console.log)"
+      return NextResponse.json(
+        { error: 'Server misconfigured: ADMIN_PASSWORD_HASH is not set. Generate with: node -e "const bcrypt=require(\'bcryptjs\'); bcrypt.hash(\'yourpassword\',12).then(console.log)"' },
+        { status: 503 }
+      );
     }
 
     const secret = getJwtSecret();

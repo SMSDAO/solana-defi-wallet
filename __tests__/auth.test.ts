@@ -4,8 +4,8 @@ import jwt from 'jsonwebtoken';
 import { NextRequest } from 'next/server';
 import { UserRole, requireAuth, requireRole, ForbiddenError, UnauthorizedError } from '@/middleware/auth';
 
-// Use the same secret that getVerifySecret() will use so tokens verify correctly
-// in any environment (local dev, CI with JWT_SECRET set, production fallback).
+// Mirror getVerifySecret() in auth.ts: use JWT_SECRET when set (CI/local with real secret),
+// otherwise fall back to the dev-only constant so tokens verify in both environments.
 const SIGN_SECRET = process.env.JWT_SECRET || 'dev-only-secret-do-not-use-in-production';
 
 function makeRequest(payload?: object): NextRequest {
