@@ -12,6 +12,7 @@
   --color-text-secondary: #a0a0a0;
   --color-border: #075985;
   --color-glow: #0ea5e9;
+  --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 [data-theme="dark"] {
@@ -44,6 +45,7 @@
 body {
   background-color: var(--color-background);
   color: var(--color-text);
+  font-family: var(--font-inter);
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -63,6 +65,21 @@ body {
       0 0 5px var(--color-glow),
       0 0 10px var(--color-glow),
       inset 0 0 5px var(--color-glow);
+  }
+
+  /* Tailwind class for the Inter font family */
+  .font-inter {
+    font-family: var(--font-inter);
+  }
+
+  /* Hide scrollbar while preserving scroll functionality */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
   }
 }
 

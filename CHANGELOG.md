@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [1.1.0] - 2026-03-15 — Enterprise Stabilization
+
+### Added
+- **CI/CD**: GitHub Actions workflow (Node 20) with lint, typecheck, build, test, and security scan jobs
+- **Release workflow**: Automated GitHub release tagging via `workflow_dispatch`
+- **Tab navigation**: Responsive `TabNav` component with Home, Dashboard, Users, Admin, Developer, Settings, Docs tabs
+- **User Dashboard**: Portfolio overview, activity metrics, and notifications (`/dashboard`)
+- **Admin Dashboard**: System status, user management, audit log, configuration (`/admin`)
+- **Developer Dashboard**: API monitor, logs viewer, environment config, integration console (`/developer`)
+- **Settings page**: Theme, notifications, security, and network preferences (`/settings`)
+- **Users page**: Searchable users table with RBAC roles (`/users`)
+- **Docs page**: Navigation hub linking to all documentation (`/docs`)
+- **Health endpoint**: `GET /api/health` returns status, version, and timestamp
+- **Metrics endpoint**: `GET /api/metrics` returns uptime and memory usage
+- **Auth endpoint**: `POST /api/auth` with Zod validation, bcrypt password verify, JWT issue
+- **RBAC roles**: `Admin`, `Developer`, `User`, `Auditor` in auth middleware with `requireRole` helper
+- **Prisma schema**: Added `AuditLog` and `RefreshToken` models
+- **Unit tests**: Jest tests for `cn` utility, RBAC roles, and health endpoint shape
+- **ESLint config**: `.eslintrc.json` with Next.js core-web-vitals rules
+- **Jest config**: `jest.config.js` with ts-jest and path aliases
+- **Dependencies**: Added `bcryptjs`, `jsonwebtoken`, `zod` (runtime); `jest`, `ts-jest`, `eslint`, type packages (dev)
+- **`.env.example`**: Comprehensive template with all required/optional variables
+- **`docs/assets/ui/`**: Directory for UI screenshots
+- **README**: Fixed merge conflict markers, updated to Node 20, SMSDAO repo URLs, Vercel one-click badge, UI Preview section
+
+### Changed
+- Updated `package.json` scripts: added `lint`, `typecheck`, `test`
+- `src/middleware/auth.ts`: added `UserRole` type and `requireRole` function; fixed unused catch variable
+- `src/app/layout.tsx`: added `TabNav` to root layout
+- `prisma/schema.prisma`: added comment explaining sqlite/postgres switching; added new models
+
+### Security
+- Auth endpoint uses bcrypt for password verification in production
+- JWT secret required to be set via environment variable
+- Added `trufflesecurity/trufflehog` secret scanning in CI
+
 ## [1.0.0] - 2025-01-20
 
 ### 🎉 Initial Release
