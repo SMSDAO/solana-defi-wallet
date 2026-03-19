@@ -5,35 +5,41 @@ import { GlowCard } from '@/components/ui/GlowCard';
 import { NeonText } from '@/components/ui/NeonText';
 import { BookOpen, ExternalLink } from 'lucide-react';
 
+// Base URL for documentation links — configured via NEXT_PUBLIC_REPO_URL so forks
+// and branch previews don't inherit a hard-coded SMSDAO/main reference.
+const REPO_URL =
+  process.env.NEXT_PUBLIC_REPO_URL ||
+  'https://github.com/SMSDAO/solana-defi-wallet';
+
 const docSections = [
   {
     title: 'Getting Started',
-    href: 'https://github.com/SMSDAO/solana-defi-wallet/blob/main/QUICK_START.md',
+    path: '/blob/main/QUICK_START.md',
     desc: 'Quick start guide for setting up the wallet locally.',
   },
   {
     title: 'Architecture',
-    href: 'https://github.com/SMSDAO/solana-defi-wallet/blob/main/docs/architecture/OVERVIEW.md',
+    path: '/blob/main/docs/architecture/OVERVIEW.md',
     desc: 'High-level architecture overview including frontend, backend, and database layers.',
   },
   {
     title: 'API Reference',
-    href: 'https://github.com/SMSDAO/solana-defi-wallet/blob/main/docs/api/README.md',
+    path: '/blob/main/docs/api/README.md',
     desc: 'Complete API documentation for tokens, prices, swap, and orders.',
   },
   {
     title: 'Authentication & RBAC',
-    href: 'https://github.com/SMSDAO/solana-defi-wallet/blob/main/docs/api/AUTHENTICATION.md',
+    path: '/blob/main/docs/api/AUTHENTICATION.md',
     desc: 'Authentication flows, JWT tokens, and role-based access control.',
   },
   {
     title: 'Deployment',
-    href: 'https://github.com/SMSDAO/solana-defi-wallet/blob/main/docs/deployment/PRODUCTION_DEPLOYMENT.md',
+    path: '/blob/main/docs/deployment/PRODUCTION_DEPLOYMENT.md',
     desc: 'Deploying to Vercel, Docker, and other environments.',
   },
   {
     title: 'Environment Variables',
-    href: 'https://github.com/SMSDAO/solana-defi-wallet/blob/main/.env.example',
+    path: '/blob/main/.env.example',
     desc: 'All required and optional environment variables.',
   },
 ];
@@ -53,10 +59,10 @@ export default function DocsPage() {
         </header>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {docSections.map(({ title, href, desc }) => (
+          {docSections.map(({ title, path, desc }) => (
             <GlowCard key={title}>
               <a
-                href={href}
+                href={`${REPO_URL}${path}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block group"

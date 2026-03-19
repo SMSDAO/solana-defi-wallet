@@ -57,7 +57,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const secret = getJwtSecret();
+    let secret: string;
+    try {
+      secret = getJwtSecret();
+    } catch {
+      // Missing JWT_SECRET is a configuration/availability issue — return 503
+      return NextResponse.json(
+        { error: 'Server misconfigured: JWT_SECRET is not set' },
+        { status: 503 }
+      );
+    }
     const payload = {
       userId: 'admin-1',
       walletAddress: adminEmail,

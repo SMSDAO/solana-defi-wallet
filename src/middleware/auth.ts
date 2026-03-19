@@ -40,7 +40,9 @@ function getVerifySecret(): string | null {
 
 export const verifyAuth = (request: NextRequest): AuthUser | null => {
   try {
-    const token = request.headers.get('authorization')?.replace('Bearer ', '');
+    // RFC 7235: the "Bearer" scheme is case-insensitive; trim surrounding whitespace.
+    const authHeader = request.headers.get('authorization') ?? '';
+    const token = authHeader.replace(/^[Bb]earer\s+/i, '').trim();
 
     if (!token) {
       return null;
@@ -51,7 +53,8 @@ export const verifyAuth = (request: NextRequest): AuthUser | null => {
       return null;
     }
 
-    const decoded = jwt.verify(token, secret) as AuthUser;
+    // Constrain to the same algorithm used when signing in /api/auth (HS256).
+    const decoded = jwt.verify(token, secret, { algorithms: ['HS256'] }) as AuthUser;
 
     return decoded;
   } catch {

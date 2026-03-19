@@ -208,9 +208,9 @@ npm run build    # Production build
 - MEV protection for swaps
 - Dynamic slippage calculation
 
-## 📦 Version 1.0.0
+## 📦 Version 1.1.0
 
-**First Production Release** - January 20, 2025
+**Enterprise Stabilization Release** - March 2026
 
 This release includes:
 - ✅ Production-ready optimizations (SEO, performance, security)
@@ -273,8 +273,8 @@ MIT License
 
 ## About
 
-**Repository:** [https://github.com/StudioDeFi/solana-defi-wallet-repository](https://github.com/StudioDeFi/solana-defi-wallet-repository)
+**Repository:** [https://github.com/SMSDAO/solana-defi-wallet](https://github.com/SMSDAO/solana-defi-wallet)
 
-**Version:** 1.0.0  
-**Maintained by:** StudioDeFi  
-**Release Date:** January 20, 2025
+**Version:** 1.1.0  
+**Maintained by:** SMSDAO  
+**Release Date:** March 2026
