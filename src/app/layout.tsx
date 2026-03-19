@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import '@fontsource/inter/latin.css';
 import './globals.css';
 import { WalletProvider } from '@/components/wallet/WalletProvider';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
@@ -7,13 +7,6 @@ import { AuraBackground } from '@/components/ui/AuraBackground';
 import { TabNav } from '@/components/ui/TabNav';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Toaster } from 'react-hot-toast';
-
-const inter = Inter({ 
-  subsets: ['latin'],
-  display: 'swap',
-  preload: true,
-  variable: '--font-inter',
-});
 
 export const metadata: Metadata = {
   title: {
@@ -108,7 +101,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} ${inter.variable}`}>
+      <body className="font-inter antialiased">
         <ErrorBoundary>
           <WalletProvider>
             <ThemeProvider>
