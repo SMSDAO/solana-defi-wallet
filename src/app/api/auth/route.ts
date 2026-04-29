@@ -55,6 +55,13 @@ export async function POST(request: NextRequest) {
         { error: 'Server misconfigured: ADMIN_PASSWORD_HASH is not set. Generate with: node -e "const bcrypt=require(\'bcryptjs\'); bcrypt.hash(\'yourpassword\',12).then(console.log)"' },
         { status: 503 }
       );
+    } else if (process.env.ALLOW_INSECURE_DEV_LOGIN !== 'true') {
+      // In non-production without a hash, require an explicit opt-in to avoid
+      // accidental password-less auth on staging/preview environments.
+      return NextResponse.json(
+        { error: 'ADMIN_PASSWORD_HASH is not set. Set it, or set ALLOW_INSECURE_DEV_LOGIN=true to skip password verification in non-production.' },
+        { status: 503 }
+      );
     }
 
     let secret: string;
@@ -73,7 +80,7 @@ export async function POST(request: NextRequest) {
       role: 'Admin',
     };
 
-    const token = jwt.sign(payload, secret, { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions);
+    const token = jwt.sign(payload, secret, { expiresIn: JWT_EXPIRES_IN, algorithm: 'HS256' } as jwt.SignOptions);
 
     return NextResponse.json({
       token,
