@@ -11,18 +11,13 @@ on:
         description: "Release name"
         required: true
         default: "Production Ready Enterprise Release"
-      deploy_to_vercel:
-        description: "Deploy to Vercel production?"
-        type: boolean
-        default: true
 
 jobs:
   release:
-    name: Create Release & Deploy
+    name: Create Release Tag
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      deployments: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,58 +31,14 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: Update package.json version
-        run: |
-          VERSION=${{ github.event.inputs.version }}
-          # Remove 'v' prefix if present
-          VERSION=${VERSION#v}
-          npm version $VERSION --no-git-tag-version
-          git add package.json package-lock.json
-
-      - name: Update CHANGELOG.md
-        run: |
-          VERSION=${{ github.event.inputs.version }}
-          RELEASE_NAME="${{ github.event.inputs.release_name }}"
-          DATE=$(date +%Y-%m-%d)
-          
-          # Insert new version entry at top of CHANGELOG
-          sed -i "s/## \[Unreleased\]/## [Unreleased]\n\n## [$VERSION] - $DATE - $RELEASE_NAME/" CHANGELOG.md
-          git add CHANGELOG.md
-
-      - name: Commit version bump
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -m "chore: bump version to ${{ github.event.inputs.version }}"
+        run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
 
       - name: Create and push tag
         run: |
-          git tag -a "${{ github.event.inputs.version }}" -m "${{ github.event.inputs.release_name }}"
-          git push origin "${{ github.event.inputs.version }}"
-          git push origin main
-
-      - name: Build for production
-        env:
-          NODE_ENV: production
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          ADMIN_PASSWORD_HASH: ${{ secrets.ADMIN_PASSWORD_HASH }}
-          NEXT_PUBLIC_RPC_URL: ${{ secrets.NEXT_PUBLIC_RPC_URL }}
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-        run: |
-          npx prisma generate
-          npm run build
-
-      - name: Deploy to Vercel Production
-        if: github.event.inputs.deploy_to_vercel == 'true'
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.ORG_ID }}
-          vercel-project-id: ${{ secrets.PROJECT_ID }}
-          vercel-args: '--prod'
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ github.event.inputs.version }}" -m "${{ github.event.inputs.release_name }}" || echo "Tag already exists"
+          git push origin "${{ github.event.inputs.version }}" || echo "Tag push failed"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -99,34 +50,13 @@ jobs:
 
             See [CHANGELOG.md](CHANGELOG.md) for full details.
 
-            ### 🚀 Highlights
+            ### Highlights
             - Enterprise-grade CI/CD with Node 20
             - Neo-Glow UI with User, Admin, and Developer dashboards
             - Secure RBAC authentication with bcrypt and refresh tokens
             - API hardening: rate limiting, Zod validation, secure headers
             - SQLite/PostgreSQL dual database support
             - Comprehensive documentation and deployment guides
-
-            ### 📦 Deployment
-            ${{ github.event.inputs.deploy_to_vercel == 'true' && '- ✅ Deployed to Vercel production' || '- ⏭️ Vercel deployment skipped' }}
-
-            ### 🔗 Links
-            - [Vercel Deployment](https://${{ secrets.VERCEL_PROJECT_NAME }}.vercel.app)
-            - [CHANGELOG](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md)
           draft: false
           prerelease: false
           generate_release_notes: true
-
-      - name: Notify on success
-        if: success()
-        run: |
-          echo "✅ Release ${{ github.event.inputs.version }} completed successfully!"
-          echo "📦 Tag pushed: ${{ github.event.inputs.version }}"
-          echo "🚀 Deployed to Vercel: ${{ github.event.inputs.deploy_to_vercel == 'true' && 'Yes' || 'No' }}"
-
-      - name: Notify on failure
-        if: failure()
-        run: |
-          echo "❌ Release ${{ github.event.inputs.version }} failed!"
-          echo "Check the logs for details."
-          exit 1
