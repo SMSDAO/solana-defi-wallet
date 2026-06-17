@@ -1,9 +1,5 @@
-
-=======
-![Auto Assign](https://github.com/StudioDeFi/solana-defi-wallet-repository/actions/workflows/auto-assign.yml/badge.svg)
-![Proof HTML](https://github.com/StudioDeFi/solana-defi-wallet-repository/actions/workflows/proof-html.yml/badge.svg)
-![Vercel Deployment](https://github.com/StudioDeFi/solana-defi-wallet-repository/actions/workflows/vercel-deploy.yml/badge.svg)
->>>>>>> main
+[![CI](https://github.com/SMSDAO/solana-defi-wallet/actions/workflows/ci.yml/badge.svg)](https://github.com/SMSDAO/solana-defi-wallet/actions/workflows/ci.yml)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/SMSDAO/solana-defi-wallet)
 
 # Solana Wallet - Advanced Multi-Platform Wallet
 
@@ -45,16 +41,16 @@ A comprehensive Solana wallet application with advanced features, MEV protection
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
-- PostgreSQL database
-- Solana RPC endpoint (or use public endpoints)
+- Node.js 20+
+- Solana RPC endpoint (public endpoints work out of the box)
+- SQLite (local/CI) or PostgreSQL (production)
 
 ### Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/StudioDeFi/solana-defi-wallet-repository.git
-cd solana-defi-wallet-repository
+git clone https://github.com/SMSDAO/solana-defi-wallet.git
+cd solana-defi-wallet
 ```
 
 2. Install dependencies:
@@ -69,10 +65,14 @@ cp .env.example .env
 
 Edit `.env` with your configuration:
 ```env
-DATABASE_URL="postgresql://user:password@localhost:5432/solana_wallet"
-NEXT_PUBLIC_SOLANA_RPC_MAINNET="https://api.mainnet-beta.solana.com"
-JWT_SECRET="your-secret-key"
-BIRDEYE_API_KEY="your-birdeye-api-key"
+# SQLite for local dev (default):
+DATABASE_URL="file:./dev.db"
+
+# PostgreSQL for production:
+# DATABASE_URL="postgresql://user:password@localhost:5432/solana_wallet"
+
+JWT_SECRET="your-32-char-secret-here"
+NEXT_PUBLIC_RPC_URL="https://api.mainnet-beta.solana.com"
 ```
 
 4. Set up the database:
@@ -208,9 +208,9 @@ npm run build    # Production build
 - MEV protection for swaps
 - Dynamic slippage calculation
 
-## 📦 Version 1.0.0
+## 📦 Version 1.1.0
 
-**First Production Release** - January 20, 2025
+**Enterprise Stabilization Release** - March 2026
 
 This release includes:
 - ✅ Production-ready optimizations (SEO, performance, security)
@@ -223,12 +223,24 @@ See [CHANGELOG.md](./CHANGELOG.md) for full release notes.
 
 ## 🚀 Quick Deploy to Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/StudioDeFi/solana-defi-wallet-repository)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/SMSDAO/solana-defi-wallet)
 
-1. Click the button above or go to [vercel.com](https://vercel.com)
-2. Import this repository: `https://github.com/StudioDeFi/solana-defi-wallet-repository`
-3. Add environment variables (see [PRODUCTION_DEPLOYMENT.md](./PRODUCTION_DEPLOYMENT.md))
-4. Deploy!
+1. Click the button above
+2. Add environment variables (see [.env.example](./.env.example))
+3. Deploy!
+
+## 🖼️ UI Preview
+
+### User Dashboard
+![User Dashboard](./docs/assets/ui/user-dashboard.png)
+
+### Admin Dashboard
+![Admin Dashboard](./docs/assets/ui/admin-dashboard.png)
+
+### Developer Dashboard
+![Developer Dashboard](./docs/assets/ui/dev-dashboard.png)
+
+> Screenshots are captured automatically via the CI screenshot workflow.
 
 ## 📚 Documentation
 
@@ -261,8 +273,8 @@ MIT License
 
 ## About
 
-**Repository:** [https://github.com/StudioDeFi/solana-defi-wallet-repository](https://github.com/StudioDeFi/solana-defi-wallet-repository)
+**Repository:** [https://github.com/SMSDAO/solana-defi-wallet](https://github.com/SMSDAO/solana-defi-wallet)
 
-**Version:** 1.0.0  
-**Maintained by:** StudioDeFi  
-**Release Date:** January 20, 2025
+**Version:** 1.1.0  
+**Maintained by:** SMSDAO  
+**Release Date:** March 2026

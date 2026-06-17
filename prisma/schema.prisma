@@ -5,6 +5,8 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Default: SQLite for CI/local dev. For production PostgreSQL, change provider to "postgresql"
+// and set DATABASE_URL to your postgres connection string.
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
@@ -102,3 +104,28 @@ model ApiKey {
   @@index([userId])
 }
 
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String
+  entityType String
+  entityId   String?
+  userId     String?
+  metadata   String?  // JSON string
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String?
+  adminId   String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([expiresAt])
+}
