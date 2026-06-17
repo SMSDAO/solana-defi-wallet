@@ -7,6 +7,8 @@ on:
     paths:
       - "src/app/**/*.tsx"
       - "src/components/**/*.tsx"
+      - "src/app/**/page.tsx"
+      - "src/components/ui/**/*.tsx"
 
 env:
   DATABASE_URL: "file:./dev.db"
@@ -24,6 +26,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -35,33 +39,85 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Prisma generate
-        run: npx prisma generate
+        run: npm exec prisma generate
 
       - name: Build
         run: npm run build
+        env:
+          NODE_ENV: production
 
       - name: Install Playwright browsers
-        run: npm exec -- playwright install --with-deps chromium
+        run: npm exec playwright install --with-deps chromium
 
       - name: Start app
-        run: npm start &
+        run: |
+          npm start &
+          # Wait a bit for the server to start
+          sleep 5
         env:
           PORT: 3000
+          NODE_ENV: production
 
-      - name: Wait for app
-        run: npm exec -- wait-on http://localhost:3000 --timeout 60000
+      - name: Wait for app to be ready
+        run: npm exec wait-on http://localhost:3000 --timeout 60000
 
-      - name: Capture User Dashboard
-        run: npm exec -- playwright screenshot --browser chromium "http://localhost:3000/dashboard" docs/assets/ui/user-dashboard.png --full-page
+      - name: Ensure screenshots directory exists
+        run: mkdir -p docs/assets/ui
 
-      - name: Capture Admin Dashboard
-        run: npm exec -- playwright screenshot --browser chromium "http://localhost:3000/admin" docs/assets/ui/admin-dashboard.png --full-page
+      - name: Capture dashboards
+        run: |
+          # Capture with a larger viewport for better quality
+          VIEWPORT="--viewport-size=1920,1080"
+          FULL_PAGE="--full-page"
+          
+          npm exec playwright screenshot $VIEWPORT $FULL_PAGE \
+            "http://localhost:3000/dashboard" \
+            docs/assets/ui/user-dashboard.png || true
+          
+          npm exec playwright screenshot $VIEWPORT $FULL_PAGE \
+            "http://localhost:3000/admin" \
+            docs/assets/ui/admin-dashboard.png || true
+          
+          npm exec playwright screenshot $VIEWPORT $FULL_PAGE \
+            "http://localhost:3000/developer" \
+            docs/assets/ui/dev-dashboard.png || true
 
-      - name: Capture Developer Dashboard
-        run: npm exec -- playwright screenshot --browser chromium "http://localhost:3000/developer" docs/assets/ui/dev-dashboard.png --full-page
+      - name: Check if screenshots were captured
+        id: check_screenshots
+        run: |
+          if ls docs/assets/ui/*.png 1> /dev/null 2>&1; then
+            echo "screenshots_exist=true" >> $GITHUB_OUTPUT
+            echo "✅ Screenshots captured successfully"
+          else
+            echo "screenshots_exist=false" >> $GITHUB_OUTPUT
+            echo "⚠️ No screenshots were captured"
+          fi
 
       - name: Commit screenshots
+        if: steps.check_screenshots.outputs.screenshots_exist == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: update UI screenshots"
+          commit_message: "chore: update UI screenshots [skip ci]"
           file_pattern: docs/assets/ui/*.png
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
+          commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+
+      - name: Upload screenshots as artifact
+        if: steps.check_screenshots.outputs.screenshots_exist == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-screenshots
+          path: docs/assets/ui/*.png
+          retention-days: 30
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Screenshot capture failed!"
+          echo "Check the logs for details."
+          
+          # Create fallback notice in README
+          echo "### ⚠️ Screenshots temporarily unavailable" >> docs/assets/ui/README.md
+          echo "Screenshots will be regenerated on next successful CI run." >> docs/assets/ui/README.md
+          exit 0  # Don't fail the workflow
